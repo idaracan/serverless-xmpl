@@ -1,0 +1,29 @@
+service: testproject
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: ${opt:stage, 'development'}
+  region: us-east-1
+  deploymentPrefix: covid
+  stackName: Covid-API-${self:provider.stage}
+  apiName: Covid-API-${self:provider.stage}
+layers:
+  commons:
+    path: commons
+    name: ncov-comons
+    package:
+      include:
+        - "./**"
+    compatibleRuntimes:
+      - nodejs12.x
+functions:
+  hello:
+    handler: users/get/handler.hello
+    layers:
+      - { Ref: CommonsLambdaLayer }
+    events:
+      - http:
+          path: user
+          method: get
+          cors: true
+          
